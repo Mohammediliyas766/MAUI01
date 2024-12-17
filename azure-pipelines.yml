@@ -1,9 +1,9 @@
 trigger:
 - main
 
-variables:
-  buildConfiguration: 'Release'
-  outputPath: '$(System.DefaultWorkingDirectory)/output'
+# variables:
+#   buildConfiguration: 'Release'
+#   outputPath: '$(System.DefaultWorkingDirectory)/output'
 
 pool:
   vmImage: 'windows-latest' # Use a Windows agent for .NET MAUI builds
