@@ -51,5 +51,5 @@ stages:
       displayName: Publish Build Artifacts
       inputs:
         PathtoPublish: '$(outputPath)'
-        ArtifactName: 'maui-app'
+        ArtifactName: 'Click Counter MAUI'
         publishLocation: 'Container'
