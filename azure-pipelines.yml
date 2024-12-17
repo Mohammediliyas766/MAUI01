@@ -1,19 +1,62 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
+variables:
+  buildConfiguration: 'Release'
+  outputPath: '$(System.DefaultWorkingDirectory)/output'
+
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'windows-latest' # Use a Windows agent for .NET MAUI builds
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: Build_Job
+    displayName: Build .NET MAUI Application
+    steps:
+    # Install .NET 9.x SDK
+    - task: UseDotNet@2
+      displayName: Install .NET 9.x SDK
+      inputs:
+        version: '9.x' # Use the .NET version 9.x
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    # Restore NuGet Packages
+    - script: |
+        dotnet restore
+      displayName: Restore NuGet Packages
+
+    # Build and Publish the MAUI Project for Android
+    - script: |
+        dotnet publish -f:net9.0-android -c $(buildConfiguration) -o $(outputPath)
+      displayName: Build and Publish Android MAUI App
+
+    # Publish Build Artifacts
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Build Artifacts
+      inputs:
+        PathtoPublish: '$(outputPath)'
+        ArtifactName: 'maui-app'
+        publishLocation: 'Container'
+
+- stage: Deploy
+  displayName: Deploy Stage
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy_Job
+    displayName: Deploy Build Artifacts
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: Download Build Artifacts
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'maui-app'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          # Optional: Add deployment tasks here
+          # For example: Upload to Google Play or App Center
