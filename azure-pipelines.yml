@@ -29,7 +29,6 @@ stages:
 
     # Authenticate NuGet Feeds
     - task: NuGetAuthenticate@1
-     inputs:
       displayName: Authenticate NuGet Feeds
 
     # Clear NuGet Cache (Optional)
@@ -44,7 +43,7 @@ stages:
 
     # Build and Publish the MAUI Project for Android
     - script: |
-        dotnet publish -f:net9.0-android -c $(buildConfiguration) -o $(outputPath)
+        dotnet publish -f net9.0-android -c $(buildConfiguration) -o $(outputPath)
       displayName: Build and Publish Android MAUI App
 
     # Publish Build Artifacts
