@@ -27,14 +27,19 @@ stages:
         dotnet workload install maui maui-android
       displayName: Install .NET MAUI Workloads
 
+    # Authenticate NuGet Feeds
+    - task: NuGetAuthenticate@1
+     inputs:
+      displayName: Authenticate NuGet Feeds
+
     # Clear NuGet Cache (Optional)
     - script: |
         dotnet nuget locals all --clear
       displayName: Clear NuGet Cache
 
-    # Restore NuGet Packages with Feed Configuration
+    # Restore NuGet Packages
     - script: |
-        dotnet restore $(System.DefaultWorkingDirectory)/MauiApp1.sln --source "https://pkgs.dev.azure.com/mohil/mohil/_packaging/{FeedName}/nuget/v3/index.json"
+        dotnet restore $(System.DefaultWorkingDirectory)/MauiApp1.sln
       displayName: Restore NuGet Packages
 
     # Build and Publish the MAUI Project for Android
