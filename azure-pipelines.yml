@@ -19,11 +19,21 @@ stages:
     - task: UseDotNet@2
       displayName: Install .NET 9.x SDK
       inputs:
-        version: '9.x' # Use the .NET version 9.x
+        version: '9.x'
+        includePreviewVersions: true # Allow preview versions if applicable
+
+    # Authenticate NuGet Feeds
+    - task: NuGetAuthenticate@0
+      displayName: Authenticate NuGet Feeds
+
+    # Clear NuGet Cache (Optional)
+    - script: |
+        dotnet nuget locals all --clear
+      displayName: Clear NuGet Cache
 
     # Restore NuGet Packages
     - script: |
-        dotnet restore
+        dotnet restore $(System.DefaultWorkingDirectory)/MauiApp1.sln
       displayName: Restore NuGet Packages
 
     # Build and Publish the MAUI Project for Android
